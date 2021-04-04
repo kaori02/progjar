@@ -58,7 +58,7 @@ def server(interface, port):
 
       # print(type(buffer))
       # print(len(buffer))
-      print('  Fetch:{} size: {} lokal:{}'.format(message[1], len(buffer), message[2]))
+      print('\n  Fetch:{} size: {} lokal:{}'.format(message[1], len(buffer), message[2]))
 
     elif cmd == "quit":
       print("  Server shutdown...")
