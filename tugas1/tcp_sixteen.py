@@ -46,11 +46,9 @@ def server(interface, port):
           listLS = message[1]+"*"
         else:
           listLS = message[1]+"/*"
-        # for i in glob.glob(listLS): print(" ", i)
         for i in glob.glob(listLS):
           back_message = back_message + i + " "
       else:
-        # for i in glob.glob("*"): print(" ", i)
         for i in glob.glob("*"):
           back_message = back_message + i + " "
     
@@ -59,12 +57,10 @@ def server(interface, port):
       
       with open(message[1], "rb") as file:
         buffer = file.read()
-      # print(" ", buffer)
 
       with open(message[2], "wb+") as file:
         file.write(buffer)
 
-      # print('\n  Fetch:{} size: {} lokal:{}'.format(message[1], len(buffer), message[2]))
       back_message = '\n  Fetch:{} size: {} lokal:{}'.format(message[1], len(buffer), message[2])
       
     elif cmd == "quit":
@@ -72,10 +68,8 @@ def server(interface, port):
       print("  Server shutdown...")
     
     back_message = bytearray(back_message, encoding='UTF-8')
-    # print(type(back_message))
     len_bck_msg = b"%05d" % len(back_message)
     back_message = len_bck_msg+back_message
-    # print(type(back_message))
     sc.sendall(back_message)
     sc.close()
     print('\n  Reply sent, socket closed')
@@ -91,7 +85,6 @@ def client(host, port):
     msg = bytearray(user_input, encoding='UTF-8')
     len_msg = b"%05d" % len(msg)
     msg = len_msg+msg
-    # print(msg)
 
     user_input = user_input.split()
     
@@ -101,7 +94,6 @@ def client(host, port):
 
     rep_msg = recvall(sock, reply)
     rep_msg = rep_msg.decode("utf-8").split()
-    # print(rep_msg)
     if(user_input[0] == "ls"):
       for i in rep_msg: print(i)
     else:
