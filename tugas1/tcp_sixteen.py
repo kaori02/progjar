@@ -23,26 +23,28 @@ def server(interface, port):
   sock.listen(1)
   print('Listening at', sock.getsockname())
   while True:
-    print('Waiting to accept a new connection\n\n')
+    print('Waiting to accept a new connection')
     sc, sockname = sock.accept()
-    print('We have accepted a connection from', sockname)
-    print('  Socket name:', sc.getsockname())
-    print('  Socket peer:', sc.getpeername())
     
     len_msg = recvall(sc, 3)
     len_msg = int(len_msg)
-    print(" ", len_msg)
     message = recvall(sc, len_msg)
 
-    print('  Incoming message:', repr(message))
     message = message.decode("utf-8").split()
-    print(' ', message,"\n")
 
     cmd = message[0]
     num_of_arg = len(message)
+    
     if cmd == "ls":
       if num_of_arg > 1:
-        for i in glob.glob(message[1]): print(" ", i)
+        listLS = ""
+        if message[1].endswith("*"):
+          listLS = message[1]
+        elif message[1].endswith("/"):
+          listLS = message[1]+"*"
+        else:
+          listLS = message[1]+"/*"
+        for i in glob.glob(listLS): print(" ", i)
       else:
         for i in glob.glob("*"): print(" ", i)
     
@@ -56,17 +58,14 @@ def server(interface, port):
       with open(message[2], "wb+") as file:
         file.write(buffer)
 
-      # print(type(buffer))
-      # print(len(buffer))
       print('\n  Fetch:{} size: {} lokal:{}'.format(message[1], len(buffer), message[2]))
 
     elif cmd == "quit":
       print("  Server shutdown...")
-      print("  Client shutdown...")
       sc.sendall(b'Farewell, client')
       sc.close()
       print('\n  Reply sent, socket closed')
-      sys.exit(1)
+      break
 
 
     sc.sendall(b'Farewell, client')
@@ -74,21 +73,24 @@ def server(interface, port):
     print('\n  Reply sent, socket closed')
 
 def client(host, port):
-  sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  sock.connect((host, port))
-  print('Client has been assigned socket name', sock.getsockname())
-  
-  msg = bytearray(input("> "), encoding='UTF-8')
-  
-  len_msg = b"%03d" % len(msg)
-  msg = len_msg+msg
-  print("\n  client to server: ", msg, "\n\n")
-  # print("\ttipe msg: ", type(msg))
-  
-  sock.sendall(msg)
-  reply = recvall(sock, 16)
-  print('The server said', repr(reply),"\n")
-  sock.close()
+  while True:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((host, port))
+    print('Client has been assigned socket name', sock.getsockname())
+
+    msg = bytearray(input("> "), encoding='UTF-8')
+    len_msg = b"%03d" % len(msg)
+    msg = len_msg+msg
+    # print("\n  client to server: ", msg, "\n\n")
+    # print("\ttipe msg: ", type(msg))
+    
+    sock.sendall(msg)
+    reply = recvall(sock, 16)
+    print('The server said', repr(reply),"\n")
+    sock.close()
+    if(msg == b'004quit'): 
+      print("Client shutdown...")
+      break
 
 if __name__ == '__main__':
   choices = {'client': client, 'server': server}
