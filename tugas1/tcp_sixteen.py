@@ -26,7 +26,7 @@ def server(interface, port):
     print('Waiting to accept a new connection')
     sc, sockname = sock.accept()
     
-    len_msg = recvall(sc, 3)
+    len_msg = recvall(sc, 5)
     len_msg = int(len_msg)
     message = recvall(sc, len_msg)
 
@@ -34,6 +34,8 @@ def server(interface, port):
 
     cmd = message[0]
     num_of_arg = len(message)
+
+    back_message = ""
     
     if cmd == "ls":
       if num_of_arg > 1:
@@ -44,33 +46,40 @@ def server(interface, port):
           listLS = message[1]+"*"
         else:
           listLS = message[1]+"/*"
-        for i in glob.glob(listLS): print(" ", i)
+        # for i in glob.glob(listLS): print(" ", i)
+        for i in glob.glob(listLS):
+          back_message = back_message + i + " "
       else:
-        for i in glob.glob("*"): print(" ", i)
+        # for i in glob.glob("*"): print(" ", i)
+        for i in glob.glob("*"):
+          back_message = back_message + i + " "
     
     elif cmd == "get":
       buffer = b""
       
       with open(message[1], "rb") as file:
         buffer = file.read()
-      print(" ", buffer)
+      # print(" ", buffer)
 
       with open(message[2], "wb+") as file:
         file.write(buffer)
 
-      print('\n  Fetch:{} size: {} lokal:{}'.format(message[1], len(buffer), message[2]))
-
+      # print('\n  Fetch:{} size: {} lokal:{}'.format(message[1], len(buffer), message[2]))
+      back_message = '\n  Fetch:{} size: {} lokal:{}'.format(message[1], len(buffer), message[2])
+      
     elif cmd == "quit":
+      back_message = "Server shutdown..."
       print("  Server shutdown...")
-      sc.sendall(b'Farewell, client')
-      sc.close()
-      print('\n  Reply sent, socket closed')
-      break
-
-
-    sc.sendall(b'Farewell, client')
+    
+    back_message = bytearray(back_message, encoding='UTF-8')
+    # print(type(back_message))
+    len_bck_msg = b"%05d" % len(back_message)
+    back_message = len_bck_msg+back_message
+    # print(type(back_message))
+    sc.sendall(back_message)
     sc.close()
     print('\n  Reply sent, socket closed')
+    if cmd == "quit":break
 
 def client(host, port):
   while True:
@@ -78,17 +87,29 @@ def client(host, port):
     sock.connect((host, port))
     print('Client has been assigned socket name', sock.getsockname())
 
-    msg = bytearray(input("> "), encoding='UTF-8')
-    len_msg = b"%03d" % len(msg)
+    user_input = input("> ")
+    msg = bytearray(user_input, encoding='UTF-8')
+    len_msg = b"%05d" % len(msg)
     msg = len_msg+msg
-    # print("\n  client to server: ", msg, "\n\n")
-    # print("\ttipe msg: ", type(msg))
+    # print(msg)
+
+    user_input = user_input.split()
     
     sock.sendall(msg)
-    reply = recvall(sock, 16)
-    print('The server said', repr(reply),"\n")
+    reply = recvall(sock, 5)
+    reply = int(reply)
+
+    rep_msg = recvall(sock, reply)
+    rep_msg = rep_msg.decode("utf-8").split()
+    # print(rep_msg)
+    if(user_input[0] == "ls"):
+      for i in rep_msg: print(i)
+    else:
+      print("\n"+' '.join(rep_msg))
+      print("")
+
     sock.close()
-    if(msg == b'004quit'): 
+    if(user_input[0] == 'quit'): 
       print("Client shutdown...")
       break
 
