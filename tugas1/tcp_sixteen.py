@@ -3,7 +3,7 @@
 # https://github.com/brandon-rhodes/fopnp/blob/m/py3/chapter03/tcp_sixteen.py
 # Simple TCP client and server that send and receive 16 octets
 
-import argparse, socket, glob,sys
+import argparse, socket, glob, time
 
 def recvall(sock, length):
   data = b''
@@ -30,13 +30,13 @@ def server(interface, port):
     len_msg = int(len_msg)
     message = recvall(sc, len_msg)
 
-    message = message.decode("utf-8").split()
-
+    message = message.decode("utf-8")
+    print("\n  accepted command :", message)
+    message = message.split()
     cmd = message[0]
     num_of_arg = len(message)
 
     back_message = ""
-    
     if cmd == "ls":
       if num_of_arg > 1:
         listLS = ""
@@ -72,22 +72,28 @@ def server(interface, port):
     back_message = len_bck_msg+back_message
     sc.sendall(back_message)
     sc.close()
-    print('\n  Reply sent, socket closed')
-    if cmd == "quit":break
+    print('  Reply sent, socket closed\n')
+    if cmd == "quit":
+      time.sleep(1)
+      break
 
 def client(host, port):
   while True:
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((host, port))
-    print('Client has been assigned socket name', sock.getsockname())
-
     user_input = input("> ")
+    if user_input == "": continue
     msg = bytearray(user_input, encoding='UTF-8')
     len_msg = b"%05d" % len(msg)
     msg = len_msg+msg
 
     user_input = user_input.split()
-    
+    possible_command = ["ls", "get", "quit"]
+    if(user_input[0] not in possible_command):
+      print("Unknown command...")
+      continue
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((host, port))
+    print('Client has been assigned socket name', sock.getsockname())
     sock.sendall(msg)
     reply = recvall(sock, 5)
     reply = int(reply)
