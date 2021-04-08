@@ -80,7 +80,7 @@ def server(interface, port):
 def client(host, port):
   while True:
     user_input = input("> ")
-    if user_input == "": continue
+    if user_input.strip() == "": continue
     msg = bytearray(user_input, encoding='UTF-8')
     len_msg = b"%05d" % len(msg)
     msg = len_msg+msg
