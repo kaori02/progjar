@@ -3,7 +3,8 @@ import sys, random, multiprocessing
 
 HOST = "127.0.0.1"
 PORT = 1060
-NUMJOBS = 6
+NUMJOBS = 8
+filename = sys.argv[1]
 
 def recvall(sock, length):
     data = b''
@@ -32,7 +33,7 @@ def worker(address, i, data):
     sock.close()
 
 if __name__ == '__main__':
-    f = open("tugas2/input.txt")
+    f = open(filename)
     data = f.readlines()
     f.close()
 

@@ -14,8 +14,11 @@ untuk test dengan bash visual studio code gunakan ``` python tugas2/sequential.p
 - knp tidak seperti klien_paralel.py ada fungsi join(), karna sistemnya yang berjalan while true -> zen_utils.py > accept_connection_forever function
 
 ## untuk jalanin :  
-### klien(bash):  
-``` python tugas2/klien_paralel.py  ```
+### test jawaban klien(bash):  
+``` python tugas2/klien_paralel.py tugas2/input.txt ```
+
+### akhiri server (bash):  
+``` python tugas2/klien_paralel.py tugas2/dummy.txt ```
 
 ### server(bash):
 ``` python tugas2/srv_threaded.py 127.0.0.1 ```
