@@ -3,7 +3,7 @@
 # https://github.com/brandon-rhodes/fopnp/blob/m/py3/chapter07/srv_threaded.py
 # Using multiple threads to serve several clients in parallel.
 
-from tugas2.klien_paralel import recvall
+from klien_paralel import recvall
 import zen_utils
 from threading import Thread
 import sys
@@ -56,6 +56,14 @@ def custom_handle_request(sock):
     new_msg = len_msg + bytes(new_msg, encoding="ascii")
     sock.sendall(new_msg)
 
+def recvall(sock, length):
+    data = b''
+    while len(data) < length:
+        more = sock.recv(length - len(data))
+        if not more:
+            raise EOFError(' was expecting %d bytes but not only recieved' ' %d bytes before the socket closed' % (length, len(data)))
+        data += more
+    return data
 
 if __name__ == '__main__':
     address = zen_utils.parse_command_line('multi-threaded server')

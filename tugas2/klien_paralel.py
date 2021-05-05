@@ -32,7 +32,7 @@ def worker(address, i, data):
     sock.close()
 
 if __name__ == '__main__':
-    f = open("input.txt")
+    f = open("tugas2/input.txt")
     data = f.readlines()
     f.close()
 
