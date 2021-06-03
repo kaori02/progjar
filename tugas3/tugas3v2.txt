@@ -1,0 +1,53 @@
+TUGAS 3 sqlite3 server menggunakan RPyC (REV. 2)
+------------------------------------------------
+
+url: 
+ - https://rpyc.readthedocs.io/en/latest/
+ - https://pypi.org/project/beautifultable/
+ - https://www.digitalocean.com/community/tutorials/how-to-use-the-sqlite3-module-in-python-3
+
+Buatlah sebuah server berdasar sqlite3 sederhana.
+
+skema:
+
+CREATE TABLE MOCKDATA(
+	ID BIGINT,
+	JobTitle VARCHAR(500),
+	EmailAddress VARCHAR(500),
+	FirstNameLastName VARCHAR(500),
+	Address VARCHAR(500),
+	Company VARCHAR(500)
+);
+
+perintah di klien:
+
+> quit
+
+> rawquery('select count(*) from mockdata')  
+	(100000)
+(data aselinya ditampilkan)
+
+> rawquery('select FirstNameLastName, JobTitle from mockdata where ID < 5')
+	(Liv Johnson,Fabricator)
+	(Harvey Hepburn,Front Desk Coordinator)
+	(Barry Fields,Audiologist)
+	(Rick Weldon,Audiologist)
+(data aselinya ditampilkan)
+
+> tabquery('select FirstNameLastName, JobTitle from mockdata where ID < 5')
+
+	+----+----------+------+--------+
+	|    |   name   | rank | gender |
+	+----+----------+------+--------+
+	| S1 |  Jacob   |  1   |  boy   |
+	+----+----------+------+--------+
+	| S2 | Isabella |  1   |  girl  |
+	+----+----------+------+--------+
+	| S3 |  Ethan   |  2   |  boy   |
+	+----+----------+------+--------+
+	| S4 |  Sophia  |  2   |  girl  |
+	+----+----------+------+--------+
+	| S5 | Michael  |  3   |  boy   |
+	+----+----------+------+--------+
+
+(data diberikan dalam bentuk tabel)
