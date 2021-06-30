@@ -12,7 +12,7 @@ def sqlGenerator(zcontext, url, url2):
     zsock2 = zcontext.socket(zmq.PUB)
     zsock2.bind(url2)
     
-    for i in range(11):
+    for i in range(15):
         # print("masuk for sql generator")
         n1 = random.randint(1, 99000)
         n2 = random.randint(1, 1000)
@@ -74,7 +74,7 @@ def req_service(zcontext, in_url, in_url2, pythagoras_url, out_url):
         # print("\nyangDiterima :", yangDiterima)
         
         sqlDiterima = isock2.recv_string()
-        # print("sqlDiterima :", sqlDiterima) #comment dulu
+        print("sqlDiterima :", sqlDiterima)
 
         
         psock.send_string(sqlDiterima)
@@ -115,9 +115,9 @@ def print_all(zcontext, url, url2):
     while True:
         value = zsock.recv_string()
         query = sqlsock.recv_string()
+        print("value_all :", value)
         count += 1
         total += int(value)
-        print(query, "count() = ",value)
         print("num query = %d, total return value = %d\n" % (count, total))
 
 def start_thread(function, *args):
@@ -127,16 +127,17 @@ def start_thread(function, *args):
 
 def main(zcontext):
     pubsub = 'tcp://127.0.0.1:6700'
+    pubsub2 = 'tcp://127.0.0.1:6703'
+    
     reqrep = 'tcp://127.0.0.1:6701'
     pushpull = 'tcp://127.0.0.1:6702'
-    pubsub2 = 'tcp://127.0.0.1:6703'
     
     start_thread(sqlGenerator, zcontext, pubsub, pubsub2)
     start_thread(return_0, zcontext, pubsub, pushpull)
     start_thread(req_service, zcontext, pubsub, pubsub2, reqrep, pushpull)
     start_thread(sqlite_executor, zcontext, reqrep)
     start_thread(print_all, zcontext, pushpull, pubsub2)
-    time.sleep(120)
+    time.sleep(10)
 
 if __name__ == '__main__':
     main(zmq.Context())
