@@ -12,7 +12,7 @@ def sqlGenerator(zcontext, url, url2):
     zsock2 = zcontext.socket(zmq.PUB)
     zsock2.bind(url2)
     
-    for i in range(11):
+    for i in range(1001):
         # print("masuk for sql generator")
         n1 = random.randint(1, 99000)
         n2 = random.randint(1, 1000)
