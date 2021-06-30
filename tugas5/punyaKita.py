@@ -4,7 +4,7 @@
 # Small application that uses several different message queues
 
 import random, threading, time, zmq, sqlite3, os, sys, hashlib
-
+start = time.time()
 def sqlGenerator(zcontext, url, url2):
     zsock = zcontext.socket(zmq.PUB)
     zsock.bind(url)
@@ -12,7 +12,7 @@ def sqlGenerator(zcontext, url, url2):
     zsock2 = zcontext.socket(zmq.PUB)
     zsock2.bind(url2)
     
-    for i in range(1001):
+    for i in range(11):
         # print("masuk for sql generator")
         n1 = random.randint(1, 99000)
         n2 = random.randint(1, 1000)
@@ -119,6 +119,8 @@ def print_all(zcontext, url, url2):
         total += int(value)
         print(query, "count() = ",value)
         print("num query = %d, total return value = %d\n" % (count, total))
+        global endtime
+        endtime = time.time()-start
 
 def start_thread(function, *args):
     thread = threading.Thread(target=function, args=args)
@@ -136,7 +138,8 @@ def main(zcontext):
     start_thread(req_service, zcontext, pubsub, pubsub2, reqrep, pushpull)
     start_thread(sqlite_executor, zcontext, reqrep)
     start_thread(print_all, zcontext, pushpull, pubsub2)
-    time.sleep(120)
+    time.sleep(20)
+    print("waktu: = ",endtime)
 
 if __name__ == '__main__':
     main(zmq.Context())
